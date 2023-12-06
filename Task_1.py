@@ -234,4 +234,4 @@ print("Final Board State:")
 for row in board:
     print(row)
 print(f"Total Score: {total_score}")
-print(f"Total Moves Played: {current_moves}")
+print(f"Total Moves Played: {current_moves})
