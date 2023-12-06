@@ -163,3 +163,75 @@ board = [[1, 2, 3, 4], [4, 4, 5, 6], [5, 3, 4, 7], [8, 7, 6, 5]]
 result, shape = is_legal_move_extended(board, 2, 2, 'left')
 
 result, shape, board
+
+# Task 4 
+
+import random
+
+def remove_gems(board):
+    #Remove gems involved in any given move and return the number of gems removed.
+    removed_count = 0
+    # For simplicity, assuming that a move results in a horizontal line of 3 or more gems
+    for r in range(len(board)):
+        for c in range(len(board[0]) - 2):
+            if board[r][c] == board[r][c + 1] == board[r][c + 2] != 0:
+                # Found a line of 3 or more
+                count = 1
+                while c + count < len(board[0]) and board[r][c] == board[r][c + count]:
+                    board[r][c + count] = 0
+                    count += 1
+                    removed_count += 1
+    return removed_count
+
+def refill_board(board):
+    #Refill the board with gems falling from above and add new random gems at the top.
+    for c in range(len(board[0])):
+        empty_rows = [r for r in range(len(board)) if board[r][c] == 0]
+        for r in empty_rows:
+            # Move gems down
+            for above_row in range(r, 0, -1):
+                board[above_row][c] = board[above_row - 1][c]
+            # Add a new gem at the top
+            board[0][c] = random.randint(1, 5)
+
+def calculate_score(removed_count):
+    #Calculate the score based on the number of gems removed.
+    if removed_count == 3:
+        return 10
+    elif removed_count == 4:
+        return 20
+    elif removed_count >= 5:  # Assuming 5 or more is a bomb
+        return 50
+    return 0
+
+def is_game_over(board):
+    # Check if the game is over, so, no more moves or a set number of moves reached.
+    return no_more_moves(board)
+
+# Example game loop
+board = [[1, 2, 3, 4], [4, 4, 5, 6], [5, 3, 4, 7], [8, 7, 6, 5]]
+max_moves = 20
+current_moves = 0
+total_score = 0
+
+while current_moves < max_moves and not is_game_over(board):
+    # Make a move (for simplicity, assuming a move is made randomly)
+    row, col = random.randint(0, 3), random.randint(0, 3)
+    direction = random.choice(['left', 'right', 'up', 'down'])
+
+    # Check if the move is legal
+    legal, _ = is_legal_move(board, row, col, direction)
+    if legal:
+        removed_count = remove_gems(board)
+        score = calculate_score(removed_count)
+        total_score += score
+        refill_board(board)
+        current_moves += 1
+
+# Print the final state of the board and the score
+print("Game Over!")
+print("Final Board State:")
+for row in board:
+    print(row)
+print(f"Total Score: {total_score}")
+print(f"Total Moves Played: {current_moves}")
